@@ -1,0 +1,223 @@
+<mujoco model="HIRONXJSK">
+  <compiler angle="radian"/>
+  <!-- <size nconmax="300" njmax="1000" nstack="1000000"/> -->
+  <option integrator="implicit" timestep="0.002"/>
+
+  <!-- <option timestep="0.002" solver="CG" tolerance="1e-6"/> -->
+  <!-- <statistic meansize="0.148864" extent="1.88572" center="-0.149086 6.70175e-12 -0.0643091"/> -->
+
+  <custom>
+    <numeric data="15" name="max_contact_points"/>
+  </custom>
+
+  <visual>
+    <rgba haze="0.15 0.25 0.35 1"/>
+    <quality shadowsize="2048"/>
+    <map stiffness="700" shadowscale="0.5" fogstart="10" fogend="15" zfar="40" haze="0.3"/>
+  </visual>
+
+  <asset>
+    <texture type="skybox" builtin="gradient" rgb1="0.3 0.5 0.7" rgb2="0 0 0" width="512" height="512"/>
+    <texture name="texplane" type="2d" builtin="checker" rgb1=".2 .3 .4" rgb2=".1 0.15 0.2"
+             width="512" height="512" mark="cross" markrgb=".8 .8 .8"/>
+    <material name="matplane" reflectance="0.3" texture="texplane" texrepeat="1 1" texuniform="true"/>
+
+    <mesh name="WAIST_mesh" file="WAIST_mesh.stl"/>
+    <mesh name="BASE_TOP_mesh" file="BASE_TOP_mesh.stl"/>
+    <mesh name="BASE_BOTTOM_mesh" file="BASE_BOTTOM_mesh.stl"/>
+    <mesh name="CHEST_JOINT0_Link_mesh" file="CHEST_JOINT0_Link_mesh.stl"/>
+    <mesh name="HEAD_JOINT0_Link_mesh" file="HEAD_JOINT0_Link_mesh.stl"/>
+    <mesh name="HEAD_JOINT1_Link_mesh" file="HEAD_JOINT1_Link_mesh.stl"/>
+    <mesh name="LARM_JOINT0_Link_mesh" file="LARM_JOINT0_Link_mesh.stl"/>
+    <mesh name="LARM_JOINT1_Link_mesh" file="LARM_JOINT1_Link_mesh.stl"/>
+    <mesh name="LARM_JOINT2_Link_mesh" file="LARM_JOINT2_Link_mesh.stl"/>
+    <mesh name="LARM_JOINT3_Link_mesh" file="LARM_JOINT3_Link_mesh.stl"/>
+    <mesh name="LARM_JOINT4_Link_mesh" file="LARM_JOINT4_Link_mesh.stl"/>
+    <mesh name="LARM_JOINT5_Link_mesh" file="LARM_JOINT5_Link_mesh.stl"/>
+    <mesh name="LHAND_JOINT0_Link_mesh" file="LHAND_JOINT0_Link_mesh.stl"/>
+    <mesh name="LHAND_JOINT1_Link_mesh" file="LHAND_JOINT1_Link_mesh.stl"/>
+    <mesh name="LHAND_JOINT2_Link_mesh" file="LHAND_JOINT2_Link_mesh.stl"/>
+    <mesh name="LHAND_JOINT3_Link_mesh" file="LHAND_JOINT3_Link_mesh.stl"/>
+    <mesh name="RARM_JOINT0_Link_mesh" file="RARM_JOINT0_Link_mesh.stl"/>
+    <mesh name="RARM_JOINT1_Link_mesh" file="RARM_JOINT1_Link_mesh.stl"/>
+    <mesh name="RARM_JOINT2_Link_mesh" file="RARM_JOINT2_Link_mesh.stl"/>
+    <mesh name="RARM_JOINT3_Link_mesh" file="RARM_JOINT3_Link_mesh.stl"/>
+    <mesh name="RARM_JOINT4_Link_mesh" file="RARM_JOINT4_Link_mesh.stl"/>
+    <mesh name="RARM_JOINT5_Link_mesh" file="RARM_JOINT5_Link_mesh.stl"/>
+    <mesh name="RHAND_JOINT0_Link_mesh" file="RHAND_JOINT0_Link_mesh.stl"/>
+    <mesh name="RHAND_JOINT1_Link_mesh" file="RHAND_JOINT1_Link_mesh.stl"/>
+    <mesh name="RHAND_JOINT2_Link_mesh" file="RHAND_JOINT2_Link_mesh.stl"/>
+    <mesh name="RHAND_JOINT3_Link_mesh" file="RHAND_JOINT3_Link_mesh.stl"/>
+  </asset>
+  <worldbody>
+    <!-- box and paper -->
+    <light directional="true" diffuse=".4 .4 .4" specular="0.1 0.1 0.1" pos="0 0 5.0" dir="0 0 -1" castshadow="false"/>
+    <light directional="true" diffuse=".6 .6 .6" specular="0.2 0.2 0.2" pos="0 0 4" dir="0 0 -1"/>
+
+    <geom name="ground" type="plane" size="0 0 1" pos="0 0 0" quat="1 0 0 0" material="matplane" condim="1"/>
+    <camera name="camera" fovy="60" pos="0.0 0 1.6" euler="0 -40 -90"/>
+
+    <!-- <body name="BASE_BOTTOM_Link"> -->
+    <!--   <geom type="mesh" mesh="BASE_BOTTOM_mesh" pos="0 0 0.8"/> -->
+    <!--   <body name="BASE_TOP_Link"> -->
+    <!--     <geom type="mesh" mesh="BASE_TOP_mesh" pos="0 0 0.8"/> -->
+    <!--     <body name="WAIST_Link"> -->
+    <!--       <geom type="mesh" mesh="WAIST_mesh" pos="0 0 0.8"/> -->
+    <!--     </body> -->
+    <!--   </body> -->
+    <!-- </body> -->
+    <body name="CHEST_JOINT0_Link">
+      <inertial pos="-0.00493378 -0.00097682 0.344052" quat="0.708324 0.705867 -0.00529093 0.00038141" mass="6.20761" diaginertia="0.06396 0.05011 0.0310827"/> <!-- pos="-0.00493378 -0.00097682 0.344052" -->
+      <!-- <joint name="CHEST_JOINT0" pos="0 0 0" axis="0 0 1" range="-2.84489 2.84489" damping="1.0" frictionloss="1.0"/> -->
+      <geom type="mesh" mesh="CHEST_JOINT0_Link_mesh" pos="0 0 0.8"/>
+      <body name="HEAD_JOINT0_Link" pos="0 0 0.5695">
+        <inertial pos="-2.292e-05 0.00547848 -0.00784016" quat="0.658128 0.752902 0.00186175 -0.00169192" mass="0.317929" diaginertia="0.000276822 0.000211012 0.000128616"/>
+        <!-- <joint name="HEAD_JOINT0" pos="0 0 0" axis="0 0 1" range="-1.22173 1.22173" damping="1.0" frictionloss="1.0"/> -->
+        <geom pos="0 0 1.3695" type="mesh" mesh="HEAD_JOINT0_Link_mesh"/> <!-- pos="0 0 0.5695" -->
+        <body name="HEAD_JOINT1_Link">
+          <inertial pos="5.02e-06 -0.0166777 0.0163153" mass="0.0808593" diaginertia="0.001 0.001 0.001"/> <!-- pos="5.02e-06 -0.0166777 0.0163153" -->
+          <!-- <joint name="HEAD_JOINT1" pos="0 0 0" axis="0 1 0" range="-0.349066 1.22173" damping="1.0" frictionloss="1.0"/> -->
+          <geom type="mesh" mesh="HEAD_JOINT1_Link_mesh" pos="0 0 0.8"/>
+        </body>
+      </body>
+      <body name="LARM_JOINT0_Link" pos="0 0.145 1.170296" quat="0.991445 -0.130526 0 0"> <!-- pos="0 0.145 0.370296"  1.170296 -->
+        <inertial pos="-0.09181857 -0.62721536  0.92329586" quat="0.80179649 -0.06693988 -0.00388205  0.59382351" mass="1.32626" diaginertia="0.00242795730 0.00146768323 0.00200179948"/> <!-- pos="-0.00226388 -0.00521383 0.0156081" diaginertia="0.00243831 0.00205563 0.0014035" quat="0.801199 -0.06689 -0.0387916 0.593381" pos="-0.00226388 -0.00521383 0.8156081" -->
+        <joint name="LARM_JOINT0" pos="0 0 0" axis="0 0 1" range="-1.53589 1.53589" damping="1.0" frictionloss="1.0" limited="true"/> <!-- damping="1.0" -->
+        <geom pos="0 0.145 0.370296" quat="0.991445 -0.130526 0 0" type="mesh" mesh="LARM_JOINT0_Link_mesh"/>
+        <body name="LARM_JOINT1_Link">
+          <inertial pos="-5.236e-05 0.0583134 -0.107061" quat="0.997039 0.0768717 -0.000264302 0.00199585" mass="1.14898" diaginertia="0.0154168 0.0150432 0.000934273"/>
+          <joint name="LARM_JOINT1" pos="0 0 0" axis="0 1 0" range="-2.44346 1.0472" damping="1.0" frictionloss="1.0" limited="true"/>
+          <geom type="mesh" mesh="LARM_JOINT1_Link_mesh"/>
+          <body name="LARM_JOINT2_Link" pos="0 0.095 -0.25">
+            <inertial pos="-2.254e-05 0.00167107 -0.0715116" quat="0.999463 -0.0309491 -0.000806169 -0.01076" mass="0.577518" diaginertia="0.00143967 0.00142233 0.000192489"/>
+            <joint name="LARM_JOINT2" pos="0 0 0" axis="0 1 0" range="-2.75762 0" damping="1.0" frictionloss="1.0" limited="true"/>
+            <geom pos="0 0.095 -0.25" type="mesh" mesh="LARM_JOINT2_Link_mesh"/>
+            <body name="LARM_JOINT3_Link" pos="-0.03 0 0">
+              <inertial pos="-1.788e-05 -0.00395812 -0.20273" quat="0.999848 -0.0172581 -0.000422822 0.00255873" mass="0.457418" diaginertia="0.000692051 0.000689691 0.000134428"/>
+              <joint name="LARM_JOINT3" pos="0 0 0" axis="0 0 1" range="-1.8326 2.87979" damping="1.0" frictionloss="1.0" limited="true"/>
+              <geom pos="-0.03 0 0" type="mesh" mesh="LARM_JOINT3_Link_mesh"/>
+              <body name="LARM_JOINT4_Link" pos="0 0 -0.235">
+                <inertial pos="0.00243131 0.00379733 -0.0577036" quat="0.99659 -0.0718122 -0.00754115 0.0399433" mass="0.418434" diaginertia="0.00052037 0.00051339 0.000132129"/>
+                <joint name="LARM_JOINT4" pos="0 0 0" axis="0 1 0" range="-1.74533 1.74533" damping="1.0" frictionloss="1.0" limited="true"/>
+                <geom pos="0 0 -0.235" type="mesh" mesh="LARM_JOINT4_Link_mesh"/>
+                <body name="LARM_JOINT5_Link" pos="-0.099 0 -0.09">
+                  <inertial pos="-0.048476 -3.2e-06 -0.0388988" quat="0.702339 0.0868218 0.0869122 0.701162" mass="1.05156" diaginertia="0.00209392 0.00204753 0.00025107"/>
+                  <joint name="LARM_JOINT5" pos="0 0 0" axis="1 0 0" range="-2.84489 2.84489" damping="1.0" frictionloss="1.0" limited="true"/>
+                  <geom pos="-0.099 0 -0.09" type="mesh" mesh="LARM_JOINT5_Link_mesh"/>
+                  <body name="LHAND_JOINT0_Link" pos="-0.0299 -0.033 0">
+                    <inertial pos="0 0 0" mass="0.01" diaginertia="0.001 0.001 0.001"/>
+                    <joint name="LHAND_JOINT0" pos="0 0 0" axis="0 0 1" range="-3.1415 3.1415" damping="1.0" frictionloss="1.0" limited="true"/>
+                    <geom pos="-0.0299 -0.033 0" type="mesh" mesh="LHAND_JOINT0_Link_mesh"/>
+                    <body name="LHAND_JOINT1_Link" pos="-0.0419 0 0">
+                      <inertial pos="0 0 0" mass="0.01" diaginertia="0.001 0.001 0.001"/>
+                      <joint name="LHAND_JOINT1" pos="0 0 0" axis="0 0 1" range="-3.1415 3.1415" damping="1.0" frictionloss="1.0" limited="true"/>
+                      <geom pos="-0.0419 0 0" type="mesh" mesh="LHAND_JOINT1_Link_mesh"/>
+                    </body>
+                  </body>
+                  <body name="LHAND_JOINT2_Link" pos="-0.0299 0.033 0">
+                    <inertial pos="0 0 0" mass="0.01" diaginertia="0.001 0.001 0.001"/>
+                    <joint name="LHAND_JOINT2" pos="0 0 0" axis="0 0 1" range="-3.1415 3.1415" damping="1.0" frictionloss="1.0" limited="true"/>
+                    <geom pos="-0.0299 0.033 0" type="mesh" mesh="LHAND_JOINT2_Link_mesh"/>
+                    <body name="LHAND_JOINT3_Link" pos="-0.0419 0 0">
+                      <inertial pos="0 0 0" mass="0.01" diaginertia="0.001 0.001 0.001"/>
+                      <joint name="LHAND_JOINT3" pos="0 0 0" axis="0 0 1" range="-3.1415 3.1415" damping="1.0" frictionloss="1.0" limited="true"/>
+                      <geom pos="-0.0419 0 0" type="mesh" mesh="LHAND_JOINT3_Link_mesh"/>
+                    </body>
+                  </body>
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+      <body name="RARM_JOINT0_Link" pos="0 -0.145 1.170296" quat="0.991445 0.130526 0 0"> <!-- pos="0 -0.145 0.370296" -->
+        <inertial pos="-0.0041272  -0.15791723  1.1798894" quat="0.59338103 -0.0387916  -0.06689 0.80119904" mass="1.32626" diaginertia="0.00242901901 0.00146102816 0.00200739282"/> <!-- pos="-0.00226388 0.00521383 0.0156081" quat="0.593381 -0.0387916 -0.06689 0.801199" diaginertia="0.00243831 0.00205563 0.0014035" -->
+        <joint name="RARM_JOINT0" pos="0 0 0" axis="0 0 1" range="-1.53589 1.53589" damping="1.0" frictionloss="1.0" limited="true"/>
+        <geom pos="0 -0.145 0.370296" quat="0.991445 0.130526 0 0" type="mesh" mesh="RARM_JOINT0_Link_mesh"/>
+        <body name="RARM_JOINT1_Link">
+          <inertial pos="-5.236e-05 -0.0583134 -0.107061" quat="0.997039 -0.0768717 -0.000264302 -0.00199585" mass="1.14898" diaginertia="0.0154168 0.0150432 0.000934273"/>
+          <joint name="RARM_JOINT1" pos="0 0 0" axis="0 1 0" range="-2.44346 1.0472" damping="1.0" frictionloss="1.0" limited="true"/>
+          <geom type="mesh" mesh="RARM_JOINT1_Link_mesh"/>
+          <body name="RARM_JOINT2_Link" pos="0 -0.095 -0.25">
+            <inertial pos="-2.254e-05 -0.00167107 -0.0715116" quat="0.999463 0.0309491 -0.000806169 0.01076" mass="0.577518" diaginertia="0.00143967 0.00142233 0.000192489"/>
+            <joint name="RARM_JOINT2" pos="0 0 0" axis="0 1 0" range="-2.75762 0" damping="1.0" frictionloss="1.0" limited="true"/>
+            <geom pos="0 -0.095 -0.25" type="mesh" mesh="RARM_JOINT2_Link_mesh"/>
+            <body name="RARM_JOINT3_Link" pos="-0.03 0 0">
+              <inertial pos="-1.788e-05 0.00395812 -0.20273" quat="0.999848 0.0172581 -0.000422822 -0.00255873" mass="0.457418" diaginertia="0.000692051 0.000689691 0.000134428"/>
+              <joint name="RARM_JOINT3" pos="0 0 0" axis="0 0 1" range="-2.87979 1.8326" damping="1.0" frictionloss="1.0" limited="true"/>
+              <geom pos="-0.03 0 0" type="mesh" mesh="RARM_JOINT3_Link_mesh"/>
+              <body name="RARM_JOINT4_Link" pos="0 0 -0.235">
+                <inertial pos="0.00243131 -0.00379733 -0.0577036" quat="0.99659 0.0718122 -0.00754115 -0.0399433" mass="0.418434" diaginertia="0.00052037 0.00051339 0.000132129"/>
+                <joint name="RARM_JOINT4" pos="0 0 0" axis="0 1 0" range="-1.74533 1.74533" damping="1.0" frictionloss="1.0" limited="true"/>
+                <geom pos="0 0 -0.235" type="mesh" mesh="RARM_JOINT4_Link_mesh"/>
+                <body name="RARM_JOINT5_Link" pos="-0.099 0 -0.09">
+                  <inertial pos="-0.048476 3.2e-06 -0.0388988" quat="0.701162 0.0869122 0.0868218 0.702339" mass="1.05156" diaginertia="0.00209392 0.00204753 0.00025107"/>
+                  <joint name="RARM_JOINT5" pos="0 0 0" axis="1 0 0" range="-2.84489 2.84489" damping="1.0" frictionloss="1.0" limited="true"/>
+                  <geom pos="-0.099 0 -0.09" type="mesh" mesh="RARM_JOINT5_Link_mesh"/>
+                  <body name="RHAND_JOINT0_Link" pos="-0.0299 -0.033 0">
+                    <inertial pos="0 0 0" mass="0.01" diaginertia="0.001 0.001 0.001"/>
+                    <joint name="RHAND_JOINT0" pos="0 0 0" axis="0 0 1" range="-3.1415 3.1415" damping="1.0" frictionloss="1.0" limited="true"/>
+                    <geom pos="-0.0299 -0.033 0" type="mesh" mesh="RHAND_JOINT0_Link_mesh"/>
+                    <body name="RHAND_JOINT1_Link" pos="-0.0419 0 0">
+                      <inertial pos="0 0 0" mass="0.01" diaginertia="0.001 0.001 0.001"/>
+                      <joint name="RHAND_JOINT1" pos="0 0 0" axis="0 0 1" range="-3.1415 3.1415" damping="1.0" frictionloss="1.0" limited="true"/>
+                      <geom pos="-0.0419 0 0" type="mesh" mesh="RHAND_JOINT1_Link_mesh"/>
+                    </body>
+                  </body>
+                  <body name="RHAND_JOINT2_Link" pos="-0.0299 0.033 0">
+                    <inertial pos="0 0 0" mass="0.01" diaginertia="0.001 0.001 0.001"/>
+                    <joint name="RHAND_JOINT2" pos="0 0 0" axis="0 0 1" range="-3.1415 3.1415" damping="1.0" frictionloss="1.0" limited="true"/>
+                    <geom pos="-0.0299 0.033 0" type="mesh" mesh="RHAND_JOINT2_Link_mesh"/>
+                    <body name="RHAND_JOINT3_Link" pos="-0.0419 0 0">
+                      <inertial pos="0 0 0" mass="0.01" diaginertia="0.001 0.001 0.001"/>
+                      <joint name="RHAND_JOINT3" pos="0 0 0" axis="0 0 1" range="-3.1415 3.1415" damping="1.0" frictionloss="1.0" limited="true"/>
+                      <geom pos="-0.0419 0 0" type="mesh" mesh="RHAND_JOINT3_Link_mesh"/>
+                    </body>
+                  </body>
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+
+    <body name="table" pos="0.5 0 0.35">
+      <!-- <joint name="table" type="slide" axis="1 0 0" margin="0.1"/> -->
+      <geom name="table" type="box" mass="5.0" size="0.35 0.6 0.35" rgba="1 1 1 1"/>
+    </body>
+
+    <body name="cloth" pos="0.374 0.037 0.8"> <!-- pos="0.374 0.037 0" pos="0.874 0.037 0.7"-->
+      <joint type="free"/>
+      <inertial mass="0.005" pos="0 0 0" diaginertia="0.001 0.001 0.001"/> <!-- 0.05, 0.1, 0.15 -->
+      <composite type="grid" count="9 21 1" spacing="0.033"> <!-- size="0.035 0.015 0.001" -->
+        <skin rgba="1 0 0 1" texcoord="true" inflate="0.005" subgrid="2"/>
+        <joint kind="main" damping="0.1" frictionloss="0.01" stiffness="0.1"/> <!-- 0.03, 0.05, 0.07 -->
+        <geom size=".01"/>
+        <!-- <pin coord="0 0"/> -->
+        <!-- <pin coord="0 1"/> -->
+        <!-- <pin coord="0 2"/> -->
+        <!-- <pin coord="0 3"/> -->
+        <!-- <pin coord="0 4"/> -->
+        <!-- <pin coord="0 5"/> -->
+        <!-- <pin coord="0 6"/> -->
+        <!-- <pin coord="0 7"/> -->
+        <!-- <pin coord="0 8"/> -->
+        <!-- <pin coord="0 9"/> -->
+        <!-- <pin coord="0 10"/> -->
+        <!-- <pin coord="0 11"/> -->
+        <!-- <pin coord="0 12"/> -->
+        <!-- <pin coord="0 13"/> -->
+        <!-- <pin coord="0 14"/> -->
+      </composite>
+    </body>
+    <body name="box" pos="0.374 0 1.0"> <!-- pos="0 0 0.06" -->
+      <joint name="box1" type="free"/>
+      <geom name="box1" type="box" mass="0.1" size=".075 .1 .06" rgba="1 1 1 1"/>
+      <!-- <geom name="box" type="box" size="0.075 0.1 0.06"/> -->
+    </body>
+
+  </worldbody>
+
+  <include file="actuator.xml"></include>
+</mujoco>

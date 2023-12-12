@@ -1,0 +1,3 @@
+Mon Nov 27 14:14:45 2023
+WARNING: mju_openResource: unknown file '/home/iwata/mujoco-python-viewer/mujoco_ws/src/agent-system/lecture2023/mujoco_tutorials/models/HIRONXJSK_SENSORS.xml'
+
