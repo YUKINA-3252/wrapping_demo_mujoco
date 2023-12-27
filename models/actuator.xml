@@ -6,31 +6,6 @@
 
   <actuator>
     <!-- LARM position control -->
-    <!-- <general name="l_joint0" ctrllimited="true" ctrlrange="-1.53589 1.53589" forcelimited="false" joint="LARM_JOINT0" gainprm="4000" biasprm="0 -3000 -300"/> -->
-    <!-- <general name="l_joint1" ctrllimited="true" ctrlrange="-2.44346 1.0472" forcelimited="false" joint="LARM_JOINT1" gainprm="4000" biasprm="0 -3000 -300"/> -->
-    <!-- <general name="l_joint2" ctrllimited="true" ctrlrange="-2.75762 0" forcelimited="false" joint="LARM_JOINT2" gainprm="4000" biasprm="0 -3000 -300"/> -->
-    <!-- <general name="l_joint3" ctrllimited="true" ctrlrange="-1.8326 2.87979" forcelimited="false" joint="LARM_JOINT3" gainprm="4000" biasprm="0 -3000 -300"/> -->
-    <!-- <general name="l_joint4" ctrllimited="true" ctrlrange="-1.74533 1.74533" forcelimited="false" joint="LARM_JOINT4" gainprm="4000" biasprm="0 -3000 -300"/> -->
-    <!-- <general name="l_joint5" ctrllimited="true" ctrlrange="-2.84489 2.84489" forcelimited="false" joint="LARM_JOINT5" gainprm="4000" biasprm="0 -3000 -300"/> -->
-    <!-- <general name="l_hand_joint0" ctrllimited="true" ctrlrange="-3.1415 3.1415" forcelimited="false" joint="LHAND_JOINT0" gainprm="4000" biasprm="0 -3000 -300"/> -->
-    <!-- <general name="l_hand_joint1" ctrllimited="true" ctrlrange="-3.1415 3.1415" forcelimited="false" joint="LHAND_JOINT1" gainprm="4000" biasprm="0 -3000 -300"/> -->
-    <!-- <general name="l_hand_joint2" ctrllimited="true" ctrlrange="-3.1415 3.1415" forcelimited="false" joint="LHAND_JOINT2" gainprm="4000" biasprm="0 -3000 -300"/> -->
-    <!-- <general name="l_hand_joint3" ctrllimited="true" ctrlrange="-3.1415 3.1415" forcelimited="false" joint="LHAND_JOINT3" gainprm="4000" biasprm="0 -3000 -300"/> -->
-
-
-    <!-- <!-\- <!-\\- RARM general control -\\-> -\-> -->
-    <!-- <general name="r_joint0" ctrllimited="true" ctrlrange="-1.53589 1.53589" forcelimited="false" joint="RARM_JOINT0" gainprm="4000" biasprm="0 -3000 -300"/> -->
-    <!-- <general name="r_joint1" ctrllimited="true" ctrlrange="-2.44346 1.0472" forcelimited="false" joint="RARM_JOINT1" gainprm="4000" biasprm="0 -3000 -300"/> -->
-    <!-- <general name="r_joint2" ctrllimited="true" ctrlrange="-2.75762 0" forcelimited="false" joint="RARM_JOINT2" gainprm="4000" biasprm="0 -3000 -300"/> -->
-    <!-- <general name="r_joint3" ctrllimited="true" ctrlrange="-1.8326 2.87979" forcelimited="false" joint="RARM_JOINT3" gainprm="4000" biasprm="0 -3000 -300"/> -->
-    <!-- <general name="r_joint4" ctrllimited="true" ctrlrange="-1.74533 1.74533" forcelimited="false" joint="RARM_JOINT4" gainprm="4000" biasprm="0 -3000 -300"/> -->
-    <!-- <general name="r_joint5" ctrllimited="true" ctrlrange="-2.84489 2.84489" forcelimited="false" joint="RARM_JOINT5" gainprm="4000" biasprm="0 -3000 -300"/> -->
-
-    <!-- <general name="r_hand_joint0" ctrllimited="true" ctrlrange="-3.1415 3.1415" forcelimited="false" joint="RHAND_JOINT0" gainprm="4000" biasprm="0 -3000 -300"/> -->
-    <!-- <general name="r_hand_joint1" ctrllimited="true" ctrlrange="-3.1415 3.1415" forcelimited="false" joint="RHAND_JOINT1" gainprm="4000" biasprm="0 -3000 -300"/> -->
-    <!-- <general name="r_hand_joint2" ctrllimited="true" ctrlrange="-3.1415 3.1415" forcelimited="false" joint="RHAND_JOINT2" gainprm="4000" biasprm="0 -3000 -300"/> -->
-    <!-- <general name="r_hand_joint3" ctrllimited="true" ctrlrange="-3.1415 3.1415" forcelimited="false" joint="RHAND_JOINT3" gainprm="4000" biasprm="0 -3000 -300"/> -->
-
     <general name="l_joint0" ctrllimited="true" ctrlrange="-1.53589 1.53589" forcelimited="false" joint="LARM_JOINT0" gainprm="3000" biasprm="0 -3000 -300"/>
     <general name="l_joint1" ctrllimited="true" ctrlrange="-2.44346 1.0472" forcelimited="false" joint="LARM_JOINT1" gainprm="3000" biasprm="0 -3000 -300"/>
     <general name="l_joint2" ctrllimited="true" ctrlrange="-2.75762 0" forcelimited="false" joint="LARM_JOINT2" gainprm="3000" biasprm="0 -3000 -300"/>
@@ -53,11 +28,8 @@
 
     <general name="r_hand_joint0" ctrllimited="true" ctrlrange="-3.1415 3.1415" forcelimited="false" joint="RHAND_JOINT0" gainprm="3000" biasprm="0 -3000 -300"/>
     <general name="r_hand_joint1" ctrllimited="true" ctrlrange="-3.1415 3.1415" forcelimited="false" joint="RHAND_JOINT1" gainprm="3000" biasprm="0 -3000 -300"/>
-    <general name="r_hand_joint2" ctrllimited="true" ctrlrange="-3.1415 3.1415" forcelimited="false" joint="RHAND_JOINT2" gainprm="3000" biasprm="0 -3000 -300"/>
-    <general name="r_hand_joint3" ctrllimited="true" ctrlrange="-3.1415 3.1415" forcelimited="false" joint="RHAND_JOINT3" gainprm="3000" biasprm="0 -3000 -300"/>
+    <!-- <general name="r_hand_joint2" ctrllimited="true" ctrlrange="-3.1415 3.1415" forcelimited="false" joint="RHAND_JOINT2" gainprm="3000" biasprm="0 -3000 -300"/> -->
+    <!-- <general name="r_hand_joint3" ctrllimited="true" ctrlrange="-3.1415 3.1415" forcelimited="false" joint="RHAND_JOINT3" gainprm="3000" biasprm="0 -3000 -300"/> -->
 
-    <!--
-    <general name="table" ctrllimited="true" ctrlrange="-10 10" joint="table" gainprm="10" biasprm="0 -3000 -300"/>
-    -->
   </actuator>
 </mujoco>

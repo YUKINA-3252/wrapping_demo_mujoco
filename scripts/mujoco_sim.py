@@ -24,13 +24,13 @@ import time
 import mujoco
 import mujoco_viewer
 
-link_num = 20
-
 class MujocoSim():
     def __init__(self, model_name):
 
         #initial joint qpos
-        initial_qpos = [-0.2685, -0.31315, -2.30818, -0.53463, 1.05814, -0.19955, 0.94664, -0.94664, -0.94664, 0.94664, 0.2685, -0.31315, -2.30818, 0.53463, 1.05814, 0.19955, 0.94664, -0.94664, -0.94664, 0.94664]
+        # initial_qpos = [-0.2685, -0.31315, -2.30818, -0.53463, 1.05814, -0.19955, 0.94664, -0.94664, -0.94664, 0.94664, 0.2685, -0.31315, -2.30818, 0.53463, 1.05814, 0.19955, -0.39181, 0.39181, 0.39181, -0.39181]
+        # initial_qpos = [0.56586, -0.9341, -1.53767, -0.2974, 0.73449, -0.7848, 0.94664, -0.94664, -0.94664, 0.94664, -0.43357, -0.53925, -1.21353, -0.22949, 0.28646, 0.34723, -0.39181, 0.39181, 0.39181, -0.39181]
+        initial_qpos = [0.56586, -0.9341, -1.53767, -0.2974, 0.73449, -0.7848, 0.94664, -0.94664, -0.94664, 0.94664, -0.43357, -0.53925, -1.21353, -0.22949, 0.28646, 0.34723, -0.39181, 0.39181]
 
         # initialization of ros node
         rospy.init_node("mujoco_sim")
@@ -47,7 +47,8 @@ class MujocoSim():
         jointstates_msg = JointState()
         joint_names = [self.model.joint(i).name for i in range(self.model.njnt)]
         joint_names_larm = list(np.array(joint_names, dtype=object)[0:10])
-        joint_names_rarm = list(np.array(joint_names, dtype=object)[10:20])
+        # joint_names_rarm = list(np.array(joint_names, dtype=object)[10:20])
+        joint_names_rarm = list(np.array(joint_names, dtype=object)[10:18])
 
         # attach suffixes to joint names of free&ball joints to specify their DoFs
         jointstates_msg.name = []
@@ -55,10 +56,6 @@ class MujocoSim():
         jointstates_msg.name += joint_names_rarm
         jointstates_msg.effort = np.zeros(len(jointstates_msg.name))
         jointstates_msg.velocity = np.zeros(len(jointstates_msg.name))
-
-        # create masks that save the qpos indices for each joint type.
-        qpos_mask_larm = self.model.jnt_qposadr[0:10]
-        qpos_mask_rarm = self.model.jnt_qposadr[10:20]
 
         mujoco.mj_step(self.model, self.data)
         self.mujoco_command = None
@@ -80,6 +77,8 @@ class MujocoSim():
         # set up publishers and subscribers
         rospy.Subscriber("mujoco_command", String, callback=self.mujoco_command_callback, queue_size=1)
         rospy.Subscriber("mujoco_ctrl_ref", Float32MultiArray, callback=self.ctrl_callback, queue_size=1)
+        qpos_pub = rospy.Publisher("mujoco_qpos", Float32MultiArray, queue_size=1)
+        qpos_msg = Float32MultiArray()
         jointstates_pub = rospy.Publisher("joint_mujoco_states", JointState, queue_size=1)
 
         # construct camera msg
@@ -136,6 +135,9 @@ class MujocoSim():
 
             if self.initial:
                 for i, initial_qpos_value in enumerate(initial_qpos):
+                    # self.data.qpos[281] = 0.03
+                    # self.data.qpos[218] = 0.03
+                    # self.data.qpos[344] = 0.03
                     self.data.qpos[i] = initial_qpos_value
                     self.data.actuator(i).ctrl[0] = initial_qpos_value
 
@@ -162,7 +164,7 @@ class MujocoSim():
                     # initial pose
                     # self.ctrl_orig = None
                     # self.ctrl_orig = np.asarray([initial_qpos_value for initial_qpos_value in initial_qpos])
-                    self.ctrl_orig = np.asarray([self.data.actuator(i).ctrl[0] for i in range(link_num)])
+                    self.ctrl_orig = np.asarray([self.data.actuator(i).ctrl[0] for i in range(self.model.nu)])
                     self.ctrl_cur_time = None
             for i in range(self.model.nu):
                 self.data.actuator(i).ctrl[:] = self.ctrl_cur[i:i+1]
@@ -172,11 +174,9 @@ class MujocoSim():
             # publish rostopic
             current_time = rospy.Time.now()
             jointstates_msg.header.stamp = current_time
-            # qpos_free = self.data.qpos[qpos_mask_free]
-            # qpos_ball = self.data.qpos[qpos_mask_ball]
-            # qpos_else_raw = self.data.qpos[qpos_mask_else]
             qpos_larm = self.data.qpos[0:10]
-            qpos_rarm = self.data.qpos[10:20]
+            # qpos_rarm = self.data.qpos[10:20]
+            qpos_rarm = self.data.qpos[10:18]
             # clip values to within range for joints with limited range.
             # qpos_else_clipped = qpos_else_raw*(self.model.jnt_limited[joint_mask_else]==0) \
             #         + np.clip(qpos_else_raw, self.model.jnt_range[joint_mask_else,0], self.model.jnt_range[joint_mask_else,1])*(self.model.jnt_limited[joint_mask_else]==1)
@@ -186,6 +186,10 @@ class MujocoSim():
             # currently, only output velocity for slide & hinge joints
             # jointstates_msg.velocity[qpos_mask_else] = self.data.qvel[self.model.jnt_dofadr][joint_mask_else]
             jointstates_pub.publish(jointstates_msg)
+            # publish current qpos
+            # qpos_msg.data = np.concatenate([self.data.qpos[:20], np.array([1.0])])
+            qpos_msg.data = np.concatenate([self.data.qpos[:18], np.array([1.0])])
+            qpos_pub.publish(qpos_msg)
 
             viewer.render()
 

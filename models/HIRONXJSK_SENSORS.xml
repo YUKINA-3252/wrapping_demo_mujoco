@@ -1,7 +1,7 @@
 <mujoco model="HIRONXJSK">
   <compiler angle="radian"/>
   <!-- <size nconmax="300" njmax="1000" nstack="1000000"/> -->
-  <option integrator="implicit" timestep="0.002"/>
+  <option integrator="implicit" timestep="0.005"/>
 
   <!-- <option timestep="0.002" solver="CG" tolerance="1e-6"/> -->
   <!-- <statistic meansize="0.148864" extent="1.88572" center="-0.149086 6.70175e-12 -0.0643091"/> -->
@@ -57,15 +57,15 @@
     <geom name="ground" type="plane" size="0 0 1" pos="0 0 0" quat="1 0 0 0" material="matplane" condim="1"/>
     <camera name="camera" fovy="60" pos="0.0 0 1.6" euler="0 -40 -90"/>
 
-    <!-- <body name="BASE_BOTTOM_Link"> -->
-    <!--   <geom type="mesh" mesh="BASE_BOTTOM_mesh" pos="0 0 0.8"/> -->
-    <!--   <body name="BASE_TOP_Link"> -->
-    <!--     <geom type="mesh" mesh="BASE_TOP_mesh" pos="0 0 0.8"/> -->
-    <!--     <body name="WAIST_Link"> -->
-    <!--       <geom type="mesh" mesh="WAIST_mesh" pos="0 0 0.8"/> -->
-    <!--     </body> -->
-    <!--   </body> -->
-    <!-- </body> -->
+    <body name="BASE_BOTTOM_Link">
+      <geom type="mesh" mesh="BASE_BOTTOM_mesh" pos="0 0 0.8"/>
+      <body name="BASE_TOP_Link">
+        <geom type="mesh" mesh="BASE_TOP_mesh" pos="0 0 0.8"/>
+        <body name="WAIST_Link">
+          <geom type="mesh" mesh="WAIST_mesh" pos="0 0 0.8"/>
+        </body>
+      </body>
+    </body>
     <body name="CHEST_JOINT0_Link">
       <inertial pos="-0.00493378 -0.00097682 0.344052" quat="0.708324 0.705867 -0.00529093 0.00038141" mass="6.20761" diaginertia="0.06396 0.05011 0.0310827"/> <!-- pos="-0.00493378 -0.00097682 0.344052" -->
       <!-- <joint name="CHEST_JOINT0" pos="0 0 0" axis="0 0 1" range="-2.84489 2.84489" damping="1.0" frictionloss="1.0"/> -->
@@ -162,18 +162,34 @@
                       <inertial pos="0 0 0" mass="0.01" diaginertia="0.001 0.001 0.001"/>
                       <joint name="RHAND_JOINT1" pos="0 0 0" axis="0 0 1" range="-3.1415 3.1415" damping="1.0" frictionloss="1.0" limited="true"/>
                       <geom pos="-0.0419 0 0" type="mesh" mesh="RHAND_JOINT1_Link_mesh"/>
+                      <body name="end_coords" pos="-0.02 0.03 0"> <!-- pos="0 0 0.06" -->
+                        <joint name="end_coords"/>
+                        <geom name="end_coords" mass="1.0" size=".01" rgba="1 1 1 1"/>
+                        <!-- <geom name="box" type="box" size="0.075 0.1 0.06"/> -->
+                        <body name="cloth" pos="0 0.32 0" quat="0.7 0 0.7 0"> <!-- pos="0.374 0.037 0" pos="0.874 0.037 0.7"-->
+                          <inertial mass="0.05" pos="0 0 0" diaginertia="0.001 0.001 0.001"/> <!-- 0.05, 0.1, 0.15 -->
+                          <composite type="grid" count="9 21 1" spacing="0.033" prefix="cloth"> <!-- size="0.035 0.015 0.001" -->
+                            <skin rgba="1 0 0 1" texcoord="true" inflate="0.005" subgrid="2"/>
+                            <joint kind="main" damping="0.1" frictionloss="0.01" stiffness="0.1"/> <!-- stiffness="0.1" -->
+                            <geom size=".008" />
+                            <pin coord="3 0"/>
+                            <pin coord="4 0"/>
+                            <pin coord="5 0"/>
+                          </composite>
+                        </body>
+                      </body>
                     </body>
                   </body>
-                  <body name="RHAND_JOINT2_Link" pos="-0.0299 0.033 0">
-                    <inertial pos="0 0 0" mass="0.01" diaginertia="0.001 0.001 0.001"/>
-                    <joint name="RHAND_JOINT2" pos="0 0 0" axis="0 0 1" range="-3.1415 3.1415" damping="1.0" frictionloss="1.0" limited="true"/>
-                    <geom pos="-0.0299 0.033 0" type="mesh" mesh="RHAND_JOINT2_Link_mesh"/>
-                    <body name="RHAND_JOINT3_Link" pos="-0.0419 0 0">
-                      <inertial pos="0 0 0" mass="0.01" diaginertia="0.001 0.001 0.001"/>
-                      <joint name="RHAND_JOINT3" pos="0 0 0" axis="0 0 1" range="-3.1415 3.1415" damping="1.0" frictionloss="1.0" limited="true"/>
-                      <geom pos="-0.0419 0 0" type="mesh" mesh="RHAND_JOINT3_Link_mesh"/>
-                    </body>
-                  </body>
+                  <!-- <body name="RHAND_JOINT2_Link" pos="-0.0299 0.033 0"> -->
+                  <!--   <inertial pos="0 0 0" mass="0.01" diaginertia="0.001 0.001 0.001"/> -->
+                  <!--   <joint name="RHAND_JOINT2" pos="0 0 0" axis="0 0 1" range="-3.1415 3.1415" damping="1.0" frictionloss="1.0" limited="true"/> -->
+                  <!--   <geom pos="-0.0299 0.033 0" type="mesh" mesh="RHAND_JOINT2_Link_mesh"/> -->
+                    <!-- <body name="RHAND_JOINT3_Link" pos="-0.0419 0 0"> -->
+                    <!--   <inertial pos="0 0 0" mass="0.01" diaginertia="0.001 0.001 0.001"/> -->
+                    <!--   <joint name="RHAND_JOINT3" pos="0 0 0" axis="0 0 1" range="-3.1415 3.1415" damping="1.0" frictionloss="1.0" limited="true"/> -->
+                    <!--   <geom pos="-0.0419 0 0" type="mesh" mesh="RHAND_JOINT3_Link_mesh"/> -->
+                    <!-- </body> -->
+                  <!-- </body> -->
                 </body>
               </body>
             </body>
@@ -187,35 +203,23 @@
       <geom name="table" type="box" mass="5.0" size="0.35 0.6 0.35" rgba="1 1 1 1"/>
     </body>
 
-    <body name="cloth" pos="0.374 0.037 0.8"> <!-- pos="0.374 0.037 0" pos="0.874 0.037 0.7"-->
-      <joint type="free"/>
-      <inertial mass="0.005" pos="0 0 0" diaginertia="0.001 0.001 0.001"/> <!-- 0.05, 0.1, 0.15 -->
-      <composite type="grid" count="9 21 1" spacing="0.033"> <!-- size="0.035 0.015 0.001" -->
-        <skin rgba="1 0 0 1" texcoord="true" inflate="0.005" subgrid="2"/>
-        <joint kind="main" damping="0.1" frictionloss="0.01" stiffness="0.1"/> <!-- 0.03, 0.05, 0.07 -->
-        <geom size=".01"/>
-        <!-- <pin coord="0 0"/> -->
-        <!-- <pin coord="0 1"/> -->
-        <!-- <pin coord="0 2"/> -->
-        <!-- <pin coord="0 3"/> -->
-        <!-- <pin coord="0 4"/> -->
-        <!-- <pin coord="0 5"/> -->
-        <!-- <pin coord="0 6"/> -->
-        <!-- <pin coord="0 7"/> -->
-        <!-- <pin coord="0 8"/> -->
-        <!-- <pin coord="0 9"/> -->
-        <!-- <pin coord="0 10"/> -->
-        <!-- <pin coord="0 11"/> -->
-        <!-- <pin coord="0 12"/> -->
-        <!-- <pin coord="0 13"/> -->
-        <!-- <pin coord="0 14"/> -->
-      </composite>
-    </body>
-    <body name="box" pos="0.374 0 1.0"> <!-- pos="0 0 0.06" -->
-      <joint name="box1" type="free"/>
-      <geom name="box1" type="box" mass="0.1" size=".075 .1 .06" rgba="1 1 1 1"/>
-      <!-- <geom name="box" type="box" size="0.075 0.1 0.06"/> -->
-    </body>
+    <!-- <body name="cloth" pos="0.374 0.07 0.8"> <!-\- pos="0.374 0.037 0" pos="0.874 0.037 0.7"-\-> -->
+    <!--   <joint type="free"/> -->
+    <!--   <inertial mass="0.001" pos="0 0 0" diaginertia="0.001 0.001 0.001"/> <!-\- 0.05, 0.1, 0.15 -\-> -->
+    <!--   <composite type="particle" count="9 21 1" spacing="0.033" prefix="cloth"> <!-\- size="0.035 0.015 0.001" -\-> -->
+    <!--     <skin rgba="1 0 0 1" texcoord="true" inflate="0.005" subgrid="2"/> -->
+    <!--     <joint kind="main" damping="0.1" frictionloss="0.01" stiffness="0.1"/> <!-\- stiffness="0.1" -\-> -->
+    <!--     <geom size=".008" /> -->
+    <!--     <pin coord="3 0"/> -->
+    <!--     <pin coord="4 0"/> -->
+    <!--     <pin coord="5 0"/> -->
+    <!--   </composite> -->
+    <!-- </body> -->
+    <!-- <body name="box" pos="0.374 0.07 1.2"> <!-\- pos="0 0 0.06" -\-> -->
+    <!--   <joint name="box1" type="free"/> -->
+    <!--   <geom name="box1" type="box" mass="5.0" size=".075 .1 .06" rgba="1 1 1 1"/> -->
+    <!--   <!-\- <geom name="box" type="box" size="0.075 0.1 0.06"/> -\-> -->
+    <!-- </body> -->
 
   </worldbody>
 
