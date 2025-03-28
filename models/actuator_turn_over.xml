@@ -1,0 +1,10 @@
+<mujoco>
+
+  <default>
+    <general dyntype="none" biastype="affine" forcerange="-100 100"/>
+  </default>
+
+  <actuator>
+    <!-- <position name="end_coords" joint="end_coords"/> -->
+  </actuator>
+</mujoco>

@@ -10,26 +10,11 @@ from rospkg import RosPack
 from std_msgs.msg import Float32MultiArray, String
 from sensor_msgs.msg import JointState, Image, CameraInfo
 
-import os
-import sys
-import argparse
-import numpy as np
-
-import rospy
-from rospkg import RosPack
-from std_msgs.msg import Float32MultiArray, String
-from sensor_msgs.msg import JointState, Image, CameraInfo
-import time
-
 import mujoco
 import mujoco_viewer
 
 class MujocoSim():
     def __init__(self, model_name):
-
-        #initial joint qpos
-        initial_qpos = [0.56586, -0.9341, -1.53767, -0.2974, 0.73449, -0.7848, 0.94664, -0.94664, -0.94664, 0.94664, -0.43357, -0.53925, -1.21353, -0.22949, 0.28646, 0.34723, -0.39181, 0.39181]
-        # initial_qpos = [-0.2685, -0.31315, -2.30818, -0.53463, 1.05814, -0.19955, 0.94664, -0.94664, -0.94664, 0.94664, 0.2685, -0.31315, -2.30818, 0.53463, 1.05814, 0.19955, 0.94664, -0.94664]
 
         # initialization of ros node
         rospy.init_node("mujoco_sim")
@@ -42,43 +27,50 @@ class MujocoSim():
         self.data = mujoco.MjData(self.model)
         viewer = mujoco_viewer.MujocoViewer(self.model, self.data)
 
+        # initial mocap_pos
+        initial_mocap_pos = [0.374, -0.28, 0.75]
+
+        # generate mask for each joint type
+        joint_mask_free = np.where(self.model.jnt_type==0) # pick just the free joints (7 DoF)
+        joint_mask_ball = np.where(self.model.jnt_type==1) # pick just the ball joints (4 DoF)
+        joint_mask_else = np.where(self.model.jnt_type>1) # pick the slide (2) and hinge (3) joints (1 DoF)
+
         # construct JointState message
         jointstates_msg = JointState()
         joint_names = [self.model.joint(i).name for i in range(self.model.njnt)]
-        joint_names_larm = list(np.array(joint_names, dtype=object)[0:10])
-        # joint_names_rarm = list(np.array(joint_names, dtype=object)[10:20])
-        joint_names_rarm = list(np.array(joint_names, dtype=object)[10:18])
+        joint_names_free = list(np.array(joint_names)[joint_mask_free])
+        joint_names_ball = list(np.array(joint_names)[joint_mask_ball])
+        joint_names_else = list(np.array(joint_names)[joint_mask_else])
 
         # attach suffixes to joint names of free&ball joints to specify their DoFs
         jointstates_msg.name = []
-        jointstates_msg.name += joint_names_larm
-        jointstates_msg.name += joint_names_rarm
+        for joint_name_free in joint_names_free:
+            jointstates_msg.name += ["{}_{}".format(joint_name_free, suffix) for suffix in ["x","y","z","q0","q1","q2","q3"]]
+        for joint_name_ball in joint_names_ball:
+            jointstates_msg.name += ["{}_{}".format(joint_name_ball, suffix) for suffix in ["q0","q1","q2","q3"]]
+        jointstates_msg.name += joint_names_else
         jointstates_msg.effort = np.zeros(len(jointstates_msg.name))
         jointstates_msg.velocity = np.zeros(len(jointstates_msg.name))
+
+        # create masks that save the qpos indices for each joint type.
+        qpos_mask_free = (np.arange(7)+self.model.jnt_qposadr[joint_mask_free].reshape(-1,1)).flatten()
+        qpos_mask_ball = (np.arange(4)+self.model.jnt_qposadr[joint_mask_ball].reshape(-1,1)).flatten()
+        qpos_mask_else = self.model.jnt_qposadr[joint_mask_else]
 
         mujoco.mj_step(self.model, self.data)
         self.mujoco_command = None
         self.ctrl_ref = None
         self.ctrl_ref_time = None
-        # initial pose
-        # self.ctrl_orig_robot = None
-        self.ctrl_orig = np.asarray([initial_qpos_value for initial_qpos_value in initial_qpos])
-        # self.ctrl_cur = np.zeros(self.model.nu, dtype=np.float32)
-        # self.ctrl_cur_robot = np.zeros(link_num, dtype=np.float32)
-        self.ctrl_cur = np.asarray([initial_qpos_value for initial_qpos_value in initial_qpos])
+        self.ctrl_orig = np.asarray([initial_mocap_pos_value for initial_mocap_pos_value in initial_mocap_pos])
+        self.ctrl_cur = np.asarray([initial_mocap_pos_value for initial_mocap_pos_value in initial_mocap_pos])
         self.ctrl_cur_time = None
-        # variable that holds the status of whether or not the ctrl_ref_msg_robot is subscribed
-        self.initial = True
-        # init actuator ctrl value
-        for i, initial_qpos_value in enumerate(initial_qpos):
-            self.data.actuator(i).ctrl[0] = initial_qpos_value
 
         # set up publishers and subscribers
         rospy.Subscriber("mujoco_command", String, callback=self.mujoco_command_callback, queue_size=1)
         rospy.Subscriber("mujoco_ctrl_ref", Float32MultiArray, callback=self.ctrl_callback, queue_size=1)
-        qpos_pub = rospy.Publisher("mujoco_qpos", Float32MultiArray, queue_size=1)
-        qpos_msg = Float32MultiArray()
         jointstates_pub = rospy.Publisher("joint_mujoco_states", JointState, queue_size=1)
+        mocap_pub = rospy.Publisher("mocap_ctrl", Float32MultiArray, queue_size=1)
+        mocap_msg = Float32MultiArray()
 
         # construct camera msg
         # camera msg wil be published if your cv_bridge is compiled by Python3.
@@ -127,70 +119,48 @@ class MujocoSim():
         # import ipdb
         # ipdb.set_trace()
 
-        # stretch_pose = [0.56586, -0.9341, -1.53767, -0.2974, 0.73449, -0.7848, 0.94664, -0.94664, -0.94664, 0.94664, -0.56586, -0.9341, -1.53767, 0.2974, 0.73449, 0.7848, 0.94664, -0.94664, -0.94664, 0.94664]
-
         # main loop
         while not rospy.is_shutdown():
-
-            if self.initial:
-                for i, initial_qpos_value in enumerate(initial_qpos):
-                    # self.data.qpos[281] = 0.03
-                    # self.data.qpos[218] = 0.03
-                    # self.data.qpos[344] = 0.03
-                    self.data.qpos[i] = initial_qpos_value
-                    self.data.actuator(i).ctrl[0] = initial_qpos_value
-
             # for the reset mujoco_command
             if self.mujoco_command is not None:
-                print("mujoco_command")
                 if self.mujoco_command == "reset":
                     mujoco.mj_resetData(self.model, self.data)
                     mujoco.mj_forward(self.model, self.data)
                     self.ctrl_ref = None
                     self.ctrl_ref_time = None
                     self.ctrl_orig = None
-                    # self.ctrl_cur = np.zeros(self.model.nu, dtype=np.float32)
-                    # self.ctrl_cur_robot = np.zeros(self.link_num, dtype=np.float32)
-                    self.ctrl_cur = np.asarray([initial_qpos_value for initial_qpos_value in initial_qpos])
+                    self.ctrl_cur = np.asarray([initial_mocap_pos_value for initial_mocap_pos_value in initial_mocap_pos])
                     self.ctrl_cur_time = None
                 self.mujoco_command = None
 
-            # actuation
+            # mocap
             if self.ctrl_ref_time is not None:
-                print("actuation")
                 self.ctrl_cur_time += self.model.opt.timestep
                 self.ctrl_cur = self.ctrl_orig + (self.ctrl_ref-self.ctrl_orig)/self.ctrl_ref_time*self.ctrl_cur_time
                 if self.ctrl_cur_time >= self.ctrl_ref_time:
                     self.ctrl_ref_time = None
-                    # initial pose
-                    # self.ctrl_orig = None
-                    # self.ctrl_orig = np.asarray([initial_qpos_value for initial_qpos_value in initial_qpos])
-                    self.ctrl_orig = np.asarray([self.data.actuator(i).ctrl[0] for i in range(self.model.nu)])
+                    self.ctrl_ref_time = None
+                    self.ctrl_orig = np.asarray([initial_mocap_pos_value for initial_mocap_pos_value in initial_mocap_pos])
                     self.ctrl_cur_time = None
-            for i in range(self.model.nu):
-                self.data.actuator(i).ctrl[:] = self.ctrl_cur[i:i+1]
-                # print(self.ctrl_cur_robot[i:i+1])
+            self.data.mocap_pos[0] = self.ctrl_cur
             mujoco.mj_step(self.model, self.data, nstep=1)
 
             # publish rostopic
             current_time = rospy.Time.now()
             jointstates_msg.header.stamp = current_time
-            qpos_larm = self.data.qpos[0:10]
-            # qpos_rarm = self.data.qpos[10:20]
-            qpos_rarm = self.data.qpos[10:18]
+            qpos_free = self.data.qpos[qpos_mask_free]
+            qpos_ball = self.data.qpos[qpos_mask_ball]
+            qpos_else_raw = self.data.qpos[qpos_mask_else]
             # clip values to within range for joints with limited range.
-            # qpos_else_clipped = qpos_else_raw*(self.model.jnt_limited[joint_mask_else]==0) \
-            #         + np.clip(qpos_else_raw, self.model.jnt_range[joint_mask_else,0], self.model.jnt_range[joint_mask_else,1])*(self.model.jnt_limited[joint_mask_else]==1)
-            # qpos_else_clipped = qpos_else_clipped[0]
-            # jointstates_msg.position = np.concatenate((qpos_free, qpos_ball, qpos_else_clipped))
-            jointstates_msg.position = np.concatenate((qpos_larm, qpos_rarm))
+            qpos_else_clipped = qpos_else_raw*(self.model.jnt_limited[joint_mask_else]==0) \
+                    + np.clip(qpos_else_raw, self.model.jnt_range[joint_mask_else,0], self.model.jnt_range[joint_mask_else,1])*(self.model.jnt_limited[joint_mask_else]==1)
+            qpos_else_clipped = qpos_else_clipped[0]
+            jointstates_msg.position = np.concatenate((qpos_free, qpos_ball, qpos_else_clipped))
             # currently, only output velocity for slide & hinge joints
-            # jointstates_msg.velocity[qpos_mask_else] = self.data.qvel[self.model.jnt_dofadr][joint_mask_else]
+            jointstates_msg.velocity[qpos_mask_else] = self.data.qvel[self.model.jnt_dofadr][joint_mask_else]
             jointstates_pub.publish(jointstates_msg)
-            # publish current qpos
-            # qpos_msg.data = np.concatenate([self.data.qpos[:20], np.array([1.0])])
-            qpos_msg.data = np.concatenate([self.data.qpos[:18], np.array([1.0])])
-            qpos_pub.publish(qpos_msg)
+            mocap_msg.data = np.concatenate([self.data.mocap_pos[0], np.array([1.0])])
+            mocap_pub.publish(mocap_msg)
 
             viewer.render()
 
@@ -198,11 +168,10 @@ class MujocoSim():
         self.mujoco_command = msg.data
 
     def ctrl_callback(self, msg):
-        self.initial = False
         self.ctrl_ref = np.asarray(msg.data[:-1], dtype=np.float32)
         self.ctrl_ref_time = msg.data[-1]
         self.ctrl_cur_time = 0.0
-        self.ctrl_orig = np.asarray([self.data.actuator(i).ctrl[0] for i in range(self.model.nu)])
+        self.ctrl_orig = np.asarray([mocap_pos_value for mocap_pos_value in self.data.mocap_pos[0]])
         if abs(self.ctrl_ref_time) < 1e-6:
             self.ctrl_ref = None
             self.ctrl_ref_time = None
@@ -235,7 +204,6 @@ class MujocoSim():
         self.camera_info_msg.header.stamp = timestamp
         self.camera_info_msg.header.frame_id = "camera_frame"
         self.camera_info_pub.publish(self.camera_info_msg)
-
 
 if __name__=="__main__":
     parser = argparse.ArgumentParser(
